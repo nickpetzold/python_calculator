@@ -8,10 +8,6 @@ import argparse
 import os
 
 
-class FileDoesNotExist(Exception):
-    pass
-
-
 class InvalidInstructions(Exception):
     def __init__(self, msg="Instructions provided are not in the right format", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
@@ -27,22 +23,25 @@ CALCULATOR_ACTIONS = {
 
 
 def parse_instructions(instructions):
+    """ Parse and validate instructions """
     if (
         type(instructions) != list
         or not all([type(ins) == str for ins in instructions])
+        or instructions == []
     ):
         raise InvalidInstructions()
 
     parsed_instructions = []
     for instruction in instructions:
+        # Allow for blank lines inbetween actions
+        if instruction == '':
+            continue
 
         components = instruction.lower().split()
-
         if len(components) != 2:
             raise InvalidInstructions()
 
         action, value = components
-
         if action not in CALCULATOR_ACTIONS.keys():
             raise ValueError(
                 f"{action} is not a valid action"
@@ -67,8 +66,9 @@ def parse_instructions(instructions):
 
 
 def read_file(filepath):
+    """ Read file to list """
     if not os.path.isfile(filepath):
-        raise FileDoesNotExist(f"{filepath} is not a valid file path")
+        raise FileNotFoundError(f"{filepath} is not a valid file path")
 
     with open(filepath, "r") as f:
         instructions = [x.strip() for x in f.readlines()]
@@ -77,18 +77,16 @@ def read_file(filepath):
 
 
 def calculate(filepath):
-    """ Main entry point of the app """
-    instructions = read_file(filepath)
-
-    instructions = parse_instructions(instructions)
+    """ Receive path to instructions file """
+    instructions = parse_instructions(read_file(filepath))
 
     for i in range(len(instructions)):
         cur_ins = instructions[i]
-        if cur_ins[0] == "apply":
-            break
-
         if i == 0:
             value = cur_ins[1]
+
+        if cur_ins[0] == "apply":
+            break
 
         next_ins = instructions[i+1]
         value = getattr(
@@ -97,10 +95,10 @@ def calculate(filepath):
         )(next_ins[1])
 
     print(value)
+    return value
 
 
 if __name__ == "__main__":
-    """ This is executed when run from the command line """
     parser = argparse.ArgumentParser()
 
     parser.add_argument("filepath", help="Filepath of instructions")
