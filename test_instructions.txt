@@ -1,0 +1,17 @@
+add 10
+multiply 3
+add 67
+add 67
+add 67
+add 67
+add 67
+add 67
+add 67
+add 67
+add 67
+add 67
+add 67
+divide 8
+multiply 2
+subtract 1000
+apply 3
