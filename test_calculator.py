@@ -119,6 +119,17 @@ class TestCalculator(unittest.TestCase):
         with self.assertRaises(ValueError):
             calculate(_)
 
+    @mock.patch('calculator.read_file')
+    def test_calculator_whitespace_success(self, rf):
+        rf.return_value = [
+            "add 2       ",
+            "multiply       3",
+            "divide 6",
+            "         apply 3",
+        ]
+
+        self.assertEqual(calculate(_), 10)
+
     def test_calculator_invalid_filepath(self, ):
         with self.assertRaises(FileNotFoundError):
             calculate("/some/invalid/path")
