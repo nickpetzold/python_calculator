@@ -71,6 +71,28 @@ class TestCalculator(unittest.TestCase):
         self.assertEqual(calculate(TEST_FILEPATH), 774497)
 
     @mock.patch('calculator.read_file')
+    def test_calculator_success_blank_lines(self, rf):
+        rf.return_value = [
+            "add 100",
+            "",
+            "",
+            "",
+            "add 200",
+            "",
+            "add 300",
+            "",
+            "",
+            "",
+            "add 400",
+            "",
+            "add 500",
+            "",
+            "apply 3",
+        ]
+
+        self.assertEqual(calculate(_), 1503)
+
+    @mock.patch('calculator.read_file')
     def test_calculator_invalid_instructions(self, rf):
         rf.return_value = [
             "add 100",
